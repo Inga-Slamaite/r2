@@ -1,15 +1,34 @@
-import { useState } from "react";
-import gyvunas from "../Data/gyvunas";
+import { useState, useEffect, useContext } from "react";
+import tipai from "../Data/tipas";
 import DataContext from "./DataContext";
 
 function Create() {
 
-//const [gyvuliai,setGyvuliai] = useState ([]);
-  //const [gyvunas,setGyvunas] = useState('');
-  //const [spalva, setSpalva] = useState('');
-  //const [svoris, setSvoris] = useState('0');
-  //const {setCreateData} = useContext(DataContext);
 
+  const [tipas,setTipas] = useState('');
+  const [spalva, setSpalva] = useState('');
+  const [svoris, setSvoris] = useState('0');
+  // const [gyvunas, setGyvunas] = useState ('');
+  const {gyvuliai, setGyvuliai} = useContext(DataContext);
+
+
+  useEffect(() => {
+    const lokalusSandelys=localStorage.getItem('tvartas')
+
+    if (lokalusSandelys) {
+      setGyvuliai(JSON.parse(lokalusSandelys));
+    }
+  }, []);
+
+
+  const Add = (e) => {
+    e.preventDefault();
+    const kopija = [...gyvuliai];
+    kopija.push({ tipas: tipas, color: spalva, kg: svoris });
+    setGyvuliai(kopija);
+
+    localStorage.setItem("tvartas", JSON.stringify(kopija));
+  }
 
 
   return (
@@ -19,25 +38,26 @@ function Create() {
       <div className="card-body">
         <div className="mb-3">
           <label className="form-label">Gyvunas</label>
-          <select className="form-select" >
+          <select className="form-select" value={tipas} onChange={e => setTipas(Number(e.target.value))} >
             <option value={0} disabled>Open this select menu</option>
             {
-            gyvunas.map(g => <option key={g.id} value={g.id}>{g.type}</option>
+            tipai.map(t => <option key={t.id} value={t.id}>{t.type}</option>
             )}
           </select>
         </div>
 
         <div className="mb-3">
         <label className="form-label">Spalva</label>
-        <input type="text" className="form-control" />
+        <input type="text" className="form-control"value={spalva} onChange={e => setSpalva(e.target.value)} />
         </div>
 
         <div className="mb-3">
           <label className="form-label">Svoris</label>
-          <input type="number" className="form-control"/>
+          <input type="number" className="form-control" value={svoris} onChange={e => setSvoris(e.target.value)} />
         </div>
 
-        <button type="button" className="btn btn-outline-secondary">Add</button>
+        <button onClick={Add} className="btn btn-outline-secondary">Add</button>
+
       </div>
 
     </div>
